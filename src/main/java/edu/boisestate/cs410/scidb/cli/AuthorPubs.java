@@ -1,4 +1,4 @@
-package edu.boisestate.cs.cs410.scidb;
+package edu.boisestate.cs410.scidb.cli;
 
 import java.sql.*;
 
