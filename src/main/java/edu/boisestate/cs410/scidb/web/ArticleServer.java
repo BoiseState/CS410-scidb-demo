@@ -1,5 +1,6 @@
 package edu.boisestate.cs410.scidb.web;
 
+import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class ArticleServer {
     public ArticleServer(PoolingDataSource<? extends Connection> pds, Service svc) {
         pool = pds;
         http = svc;
-        engine = new PebbleTemplateEngine();
+        engine = new PebbleTemplateEngine(new ClasspathLoader());
 
         http.get("/", this::rootPage, engine);
     }
