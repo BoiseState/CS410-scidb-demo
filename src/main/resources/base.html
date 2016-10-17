@@ -5,6 +5,26 @@
     <title>SciDB Browser</title>
 </head>
 <body>
-<h1>Hello, world</h1>
+<h1>Article Browser</h1>
+<p>The database has {{ articleCount }} articles.</p>
+<h2>Publications</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th># Issues</th>
+        <th># Articles</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for pub in publications %}
+    <tr>
+        <td><a href="/pubs/{{ pub.pubId }}/">{{ pub.pubTitle }}</a></td>
+        <td>{{ pub.issueCount }}</td>
+        <td>{{ pub.articleCount }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 </body>
 </html>
