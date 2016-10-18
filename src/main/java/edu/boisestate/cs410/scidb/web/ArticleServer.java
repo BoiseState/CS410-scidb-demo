@@ -32,73 +32,31 @@ public class ArticleServer {
         engine = new PebbleTemplateEngine(new ClasspathLoader());
 
         http.get("/", this::rootPage, engine);
+        http.get("/pubs/:pid/", this::pubPage, engine);
     }
 
+    /**
+     * View the root page with basic database info.
+     */
     ModelAndView rootPage(Request request, Response response) throws SQLException {
         Map<String,Object> fields = new HashMap<>();
 
-        try (Connection cxn = pool.getConnection();
-             Statement stmt = cxn.createStatement()) {
-            try (ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS article_count FROM article")) {
+        try (Connection cxn = pool.getConnection()) {
+            try(Statement stmt = cxn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS article_count FROM article")) {
                 if (!rs.next()) {
                     throw new IllegalStateException("umm, no data?");
                 }
-                int count = rs.getInt("article_count");
-                fields.put("articleCount", count);
+                fields.put("articleCount", rs.getInt("article_count"));
             }
-
-            List<TitleListEntry> titles = new ArrayList<>();
-            try (ResultSet rs = stmt.executeQuery("SELECT pub_id, pub_title, \n" +
-                    "  COUNT(DISTINCT issue_id) AS issue_count,\n" +
-                    "  COUNT(article_id) AS article_count\n" +
-                    "FROM publication\n" +
-                    "JOIN issue USING (pub_id)\n" +
-                    "JOIN article USING (issue_id)\n" +
-                    "GROUP BY pub_id, pub_title \n" +
-                    "ORDER BY pub_title;")) {
-                while (rs.next()) {
-                    // put result in a list
-                    titles.add(new TitleListEntry(
-                            rs.getLong("pub_id"),
-                            rs.getString("pub_title"),
-                            rs.getInt("issue_count"),
-                            rs.getInt("article_count")));
-                }
-            }
-            logger.info("retrieved {} titles", titles.size());
-            fields.put("publications", titles);
+            fields.put("publications", PubListEntry.retrieve(cxn));
         }
 
-        return new ModelAndView(fields, "base.html");
+        return new ModelAndView(fields, "home.html");
     }
 
-    static class TitleListEntry {
-        final long pubId;
-        final String pubTitle;
-        final int issueCount;
-        final int articleCount;
-
-        public TitleListEntry(long id, String title, int issues, int articles) {
-            pubId = id;
-            pubTitle = title;
-            issueCount = issues;
-            articleCount = articles;
-        }
-
-        public long getPubId() {
-            return pubId;
-        }
-
-        public String getPubTitle() {
-            return pubTitle;
-        }
-
-        public int getIssueCount() {
-            return issueCount;
-        }
-
-        public int getArticleCount() {
-            return articleCount;
-        }
+    public ModelAndView pubPage(Request request, Response response) {
+        return null;
     }
+
 }

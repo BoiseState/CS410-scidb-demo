@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Article Browser</h1>
-<p>The database has {{ articleCount }} articles.</p>
+<p>The database has {{ articleCount }} articles in {{ publications.size() }} publications.</p>
 <h2>Publications</h2>
 <table>
     <thead>
@@ -19,7 +19,7 @@
     <tbody>
     {% for pub in publications %}
     <tr>
-        <td><a href="/pubs/{{ pub.pubId }}/">{{ pub.pubTitle }}</a></td>
+        <td><a href="/pubs/{{ pub.id }}/">{{ pub.title }}</a></td>
         <td>{{ pub.issueCount }}</td>
         <td>{{ pub.articleCount }}</td>
     </tr>
