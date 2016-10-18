@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SciDB &mdash; {{ title }}</title>
+</head>
+<body>
+<h1>{{ title }}</h1>
+
+<h2>Issues</h2>
+<ul>
+    {% for issue in issues %}
+        <li><a href="/issues/{{ issue.id }}">{{ issue.title }}</a>
+        {% if issue.volume != null %}Vol. {{ issue.volume }}{% endif %}
+        {% if issue.number != null %}No. {{ issue.number }}{% endif %}</li>
+    {% endfor %}
+</ul>
+</body>
+</html>
