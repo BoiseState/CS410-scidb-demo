@@ -34,6 +34,7 @@ public class ArticleServer {
         http.get("/pubs/:pid/", this::pubPage, engine);
         http.get("/pubs/:pid/issues/:iid", this::redirectToFolder);
         http.get("/pubs/:pid/issues/:iid/", this::issuePage, engine);
+        http.get("/articles/:aid", this::articlePage, engine);
     }
 
     public String redirectToFolder(Request request, Response response) {
@@ -165,5 +166,29 @@ public class ArticleServer {
         }
 
         return new ModelAndView(fields, "issue.html.twig");
+    }
+
+    public ModelAndView articlePage(Request request, Response response) throws SQLException {
+        long aid = Long.parseLong(request.params("aid"));
+
+        Map<String,Object> fields = new HashMap<>();
+        fields.put("id", aid);
+
+        try (Connection cxn = pool.getConnection()) {
+            try (PreparedStatement ps = cxn.prepareStatement("SELECT title, iss_date, abstract FROM article JOIN issue USING (issue_id) WHERE article_id = ?")) {
+                ps.setLong(1, aid);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        fields.put("title", rs.getString("title"));
+                        fields.put("abstract", rs.getString("abstract"));
+                        fields.put("date", rs.getDate("iss_date"));
+                    } else {
+                        http.halt(404, "No such article " + aid);
+                    }
+                }
+            }
+        }
+
+        return new ModelAndView(fields, "article.html.twig");
     }
 }
