@@ -1,5 +1,6 @@
 package edu.boisestate.cs410.scidb.web;
 
+import com.google.common.collect.ImmutableMap;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.slf4j.Logger;
@@ -144,6 +145,22 @@ public class ArticleServer {
                         http.halt(404, "No such issue " + iss_id + " in publication " + pub_id);
                     }
                 }
+            }
+
+            try (PreparedStatement ps = cxn.prepareStatement("SELECT article_id, title " +
+                                                                     "FROM article " +
+                                                                     "WHERE issue_id = ?")) {
+                ps.setLong(1, iss_id);
+                List<Map<String,Object>> articles = new ArrayList<>();
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        articles.add(ImmutableMap.<String,Object>builder()
+                                                 .put("id", rs.getLong("article_id"))
+                                                 .put("title", rs.getString("title"))
+                                                 .build());
+                    }
+                }
+                fields.put("articles", articles);
             }
         }
 
