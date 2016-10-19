@@ -29,7 +29,16 @@ public class ArticleServer {
         engine = new PebbleTemplateEngine(new ClasspathLoader());
 
         http.get("/", this::rootPage, engine);
+        http.get("/pubs/:pid", this::redirectToFolder);
         http.get("/pubs/:pid/", this::pubPage, engine);
+        http.get("/pubs/:pid/issues/:iid", this::redirectToFolder);
+        http.get("/pubs/:pid/issues/:iid/", this::issuePage, engine);
+    }
+
+    public String redirectToFolder(Request request, Response response) {
+        String path = request.pathInfo();
+        response.redirect(path + "/", 301);
+        return "Redirecting to " + path + "/";
     }
 
     /**
@@ -56,6 +65,7 @@ public class ArticleServer {
         long pid = Long.parseLong(request.params("pid"));
 
         Map<String,Object> fields = new HashMap<>();
+        fields.put("pubId", pid);
 
         try (Connection cxn = pool.getConnection()) {
             // look up the pub info
@@ -101,4 +111,42 @@ public class ArticleServer {
         return new ModelAndView(fields, "pub.html.twig");
     }
 
+    public ModelAndView issuePage(Request request, Response response) throws SQLException {
+        long pub_id = Long.parseLong(request.params("pid"));
+        long iss_id = Long.parseLong(request.params("iid"));
+
+        Map<String,Object> fields = new HashMap<>();
+
+        try (Connection cxn = pool.getConnection()) {
+            // look up the issue info
+            try (PreparedStatement ps = cxn.prepareStatement("SELECT iss_title, pub_title, iss_volume, iss_number, iss_date " +
+                                                                     "FROM issue JOIN publication USING (pub_id) " +
+                                                                     "WHERE issue_id = ? AND pub_id = ?")) {
+                ps.setLong(1, iss_id);
+                ps.setLong(2, pub_id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        fields.put("title", rs.getString("iss_title"));
+                        Map<String, Object> pub = new HashMap<>();
+                        pub.put("id", pub_id);
+                        pub.put("title", rs.getString("pub_title"));
+                        fields.put("pub", pub);
+                        fields.put("volume", rs.getInt("iss_volume"));
+                        if (rs.wasNull()) {
+                            fields.put("volume", null);
+                        }
+                        fields.put("number", rs.getInt("iss_number"));
+                        if (rs.wasNull()) {
+                            fields.put("number", null);
+                        }
+                        fields.put("date", rs.getDate("iss_date"));
+                    } else {
+                        http.halt(404, "No such issue " + iss_id + " in publication " + pub_id);
+                    }
+                }
+            }
+        }
+
+        return new ModelAndView(fields, "issue.html.twig");
+    }
 }

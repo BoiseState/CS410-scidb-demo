@@ -10,9 +10,9 @@
 <h2>Issues</h2>
 <ul>
     {% for issue in issues %}
-        <li><a href="/issues/{{ issue.id }}">{{ issue.title }}</a>
+        <li><a href="/pubs/{{ pubId }}/issues/{{ issue.id }}/">{{ issue.title }}
         {% if issue.volume != null %}Vol. {{ issue.volume }}{% endif %}
-        {% if issue.number != null %}No. {{ issue.number }}{% endif %}</li>
+        {% if issue.number != null %}No. {{ issue.number }}{% endif %}</a> ({{ issue.date }})</li>
     {% endfor %}
 </ul>
 </body>

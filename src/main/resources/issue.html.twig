@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SciDB &mdash; {% if title %}{{ title }}{% else %}{{ pub.title }}{% endif %}</title>
+</head>
+<body>
+<h1>{% if title != null %}{{ title }}
+    {% else %}
+    {{ pub.title }}
+    {% if volume != null %}Vol. {{ volume }}{% endif %}
+    {% if number != null %}No. {{ number }}{% endif %}
+{% endif %}</h1>
+
+<p>Published on {{ date | date("MMMM d, YYYY") }}.</p>
+
+<h2>Articles</h2>
+<ul>
+    {% for article in articles %}
+        <li><a href="/articles/{{ article.id }}">{{ article.title }}</a></li>
+    {% endfor %}
+</ul>
+</body>
+</html>
