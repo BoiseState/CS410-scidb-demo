@@ -81,10 +81,33 @@
           <programs>
             <program>
               <id>scidb-web</id>
-              <mainClass>edu.boisestate.cs410.scidb.WebMain</mainClass>
+              <mainClass>edu.boisestate.cs410.scidb.web.WebMain</mainClass>
             </program>
           </programs>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+              <target>
+                <tar destfile="${project.build.directory}/${project.artifactId}.tgz"
+                     compression="gzip">
+                  <tarfileset dir="${project.build.directory}/${project.artifactId}/repo"
+                              prefix="${project.artifactId}/repo"/>
+                  <tarfileset dir="${project.build.directory}/${project.artifactId}/bin"
+                              prefix="${project.artifactId}/bin"
+                              filemode="755"/>
+                </tar>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

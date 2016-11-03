@@ -1,0 +1,2 @@
+*.sh text eol=lf
+supervisord.conf text eol=lf

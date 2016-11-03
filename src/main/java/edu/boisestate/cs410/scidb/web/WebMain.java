@@ -33,7 +33,9 @@ public class WebMain {
         if (auth != null) {
             String[] parts = auth.split(":", 2);
             user = parts[0];
-            password = parts[1];
+            if (parts.length > 1) {
+                password = parts[1];
+            }
             dburi = new URI(dburi.getScheme(), null, dburi.getHost(), dburi.getPort(), dburi.getPath(), dburi.getQuery(), dburi.getFragment());
         }
 
