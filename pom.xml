@@ -11,6 +11,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <db.name>scidb</db.name>
+    <db.user>postgres</db.user>
   </properties>
 
   <dependencies>
@@ -63,6 +65,24 @@
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.5.0</version>
+        <executions>
+          <execution>
+            <id>default-cli</id>
+            <goals><goal>java</goal></goals>
+            <configuration>
+              <mainClass>edu.boisestate.cs410.scidb.web.WebMain</mainClass>
+              <arguments>
+                <argument>postgresql://${db.user}:${db.password}@localhost/${db.name}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
