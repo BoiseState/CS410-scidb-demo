@@ -187,6 +187,17 @@ public class ArticleServer {
                     }
                 }
             }
+
+            try (PreparedStatement ps = cxn.prepareStatement("SELECT author_name FROM author JOIN article_author USING (author_id) WHERE article_id = ? ORDER BY position")) {
+                ps.setLong(1, aid);
+                List<String> authors = new ArrayList<>();
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        authors.add(rs.getString("author_name"));
+                    }
+                }
+                fields.put("authors", authors);
+            }
         }
 
         return new ModelAndView(fields, "article.html.twig");

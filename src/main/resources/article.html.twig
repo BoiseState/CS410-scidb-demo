@@ -9,6 +9,13 @@
 
 <p>Published on {{ date | date("MMMM d, YYYY") }}.</p>
 
+<h2>Authors</h2>
+<ul>
+    {% for author in authors %}
+    <li>{{ author }}</li>
+    {% endfor %}
+</ul>
+
 <h2>Abstract</h2>
 <p>{{ abstract }}</p>
 
