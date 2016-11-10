@@ -21,7 +21,7 @@ COPY scidb-dump.sql fulltext-init.sql /srv/
 # Set up PostgreSQL database
 RUN install -d -o postgres -g postgres /srv/psql
 # TODO Modify to reference your dump file name
-RUN /bin/su -c "/bin/sh /srv/initdb.sh /srv/scidb-dump.sql /srv/fulltext-init.sql" postgres
+RUN /bin/su -c "/bin/sh /srv/initdb.sh scidb /srv/scidb-dump.sql /srv/fulltext-init.sql" postgres
 VOLUME /srv/psql
 
 # Add the code

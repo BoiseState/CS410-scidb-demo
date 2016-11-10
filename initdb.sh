@@ -14,6 +14,12 @@ initdb --auth=trust /srv/psql || exit 2
 # start up the database
 pg_ctl start -w -D /srv/psql || exit 2
 
+shutdown()
+{
+    pg_ctl stop -w -D /srv/psql
+}
+trap shutdown 0 INT TERM
+
 createdb "$DBNAME" || exit 2
 
 # and load data
