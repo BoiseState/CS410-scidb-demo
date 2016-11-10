@@ -1,8 +1,5 @@
 FROM java:8-jre-alpine
 
-ARG dbname
-ARG appname
-
 EXPOSE 4567
 
 # Install database
@@ -16,6 +13,9 @@ COPY supervisord.conf /etc/supervisor.d/webapp.ini
 CMD /usr/bin/supervisord -n
 
 COPY initdb.sh setup.sql /srv
+
+ARG dbname
+ARG appname
 
 # Copy setup scripts *including* the DB dump
 # TODO Modify to include your dump or schema file
