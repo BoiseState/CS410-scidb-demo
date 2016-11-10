@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS article_search;
 CREATE TABLE article_search (
   article_id INTEGER PRIMARY KEY REFERENCES article ON DELETE CASCADE,
   article_vector TSVECTOR NOT NULL,
-  up2date BOOLEAN NOT NULL
+  up2date BOOLEAN NOT NULL -- is the data current?
 );
 
 INSERT INTO article_search (article_id, article_vector, up2date)
