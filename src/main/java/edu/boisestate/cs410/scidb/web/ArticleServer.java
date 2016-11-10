@@ -91,9 +91,6 @@ public class ArticleServer {
                         Map<String,Object> issue = new HashMap<>();
                         issue.put("id", rs.getLong("issue_id"));
                         issue.put("title", rs.getString("iss_title"));
-                        if (rs.wasNull()) {
-                            issue.put("title", null);
-                        }
                         issue.put("volume", rs.getInt("iss_volume"));
                         if (rs.wasNull()) {
                             issue.put("volume", null);
