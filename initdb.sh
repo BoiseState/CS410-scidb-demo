@@ -2,8 +2,7 @@
 
 set -e
 
-DBFILE="$1"
-if test -z "$DBFILE"; then
+if test -z "$1"; then
     echo "no database init file" >&2
 fi
 
@@ -14,7 +13,7 @@ initdb --auth=trust /srv/psql
 pg_ctl start -w -D /srv/psql
 
 # and load data
-if [ -n "$DBFILE" ]; then
+for DBFILE in "$@"; do
     echo "Loading from $DBFILE" >&2
     psql -f "$DBFILE"
-fi
+done

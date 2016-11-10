@@ -16,12 +16,12 @@ COPY initdb.sh /srv
 
 # Copy setup scripts *including* the DB dump
 # TODO Modify to include your dump or schema file
-COPY scidb-dump.sql /srv
+COPY scidb-dump.sql fulltext.sql /srv
 
 # Set up PostgreSQL database
 RUN install -d -o postgres -g postgres /srv/psql
 # TODO Modify to reference your dump file name
-RUN /bin/su -c "/bin/sh /srv/initdb.sh /srv/scidb-dump.sql" postgres
+RUN /bin/su -c "/bin/sh /srv/initdb.sh /srv/scidb-dump.sql /fulltext.sql" postgres
 VOLUME /srv/psql
 
 # Add the code
