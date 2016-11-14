@@ -12,7 +12,7 @@ COPY supervisord.conf /etc/supervisor.d/webapp.ini
 
 CMD /usr/bin/supervisord -n
 
-COPY initdb.sh setup.sql /srv
+COPY initdb.sh setup.sql /srv/
 
 ARG dbname
 ARG appname
