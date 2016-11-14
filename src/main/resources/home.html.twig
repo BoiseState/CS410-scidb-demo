@@ -7,6 +7,11 @@
 <body>
 <h1>Article Browser</h1>
 <p>The database has {{ articleCount }} articles in {{ publications.size() }} publications.</p>
+<h2>Search</h2>
+<form action="/search" method="GET">
+    <label>Keywords: <input type="search" name="q"></label>
+    <button type="submit">Search</button>
+</form>
 <h2>Publications</h2>
 <table>
     <thead>

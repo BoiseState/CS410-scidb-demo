@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS article_search;
 CREATE TABLE article_search (
+  -- article_search rows are always about specific article rows
   article_id INTEGER PRIMARY KEY REFERENCES article ON DELETE CASCADE,
   article_vector TSVECTOR NOT NULL,
   up2date BOOLEAN NOT NULL -- is the data current?

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SciDB Search - {{ query }}</title>
+</head>
+<body>
+<h1>Search Results</h1>
+<form action="/search" method="GET">
+    <label>Keywords: <input type="search" name="q" value="{{ query }}"></label>
+    <button type="submit">Search</button>
+</form>
+<ol>
+    {% for article in results %}
+    <li><a href="/articles/{{ article.id }}">{{ article.title }}</a></li>
+    {% endfor %}
+</ol>
+</body>
+</html>

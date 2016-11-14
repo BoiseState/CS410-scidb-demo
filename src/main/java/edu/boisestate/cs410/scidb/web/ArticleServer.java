@@ -2,6 +2,7 @@ package edu.boisestate.cs410.scidb.web;
 
 import com.google.common.collect.ImmutableMap;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
+import com.sun.javafx.property.adapter.ReadOnlyJavaBeanPropertyBuilderHelper;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ public class ArticleServer {
         http.get("/pubs/:pid/issues/:iid", this::redirectToFolder);
         http.get("/pubs/:pid/issues/:iid/", this::issuePage, engine);
         http.get("/articles/:aid", this::articlePage, engine);
+        http.get("/search", this::searchResults, engine);
     }
 
     public String redirectToFolder(Request request, Response response) {
@@ -198,5 +200,38 @@ public class ArticleServer {
         }
 
         return new ModelAndView(fields, "article.html.twig");
+    }
+
+    public ModelAndView searchResults(Request req, Response res) throws SQLException {
+        Map<String,Object> fields = new HashMap<>();
+
+        String query = req.queryParams("q");
+        fields.put("query", query);
+
+        String searchQuery = "SELECT article_id, title\n" +
+                "FROM article JOIN article_search USING (article_id),\n" +
+                "  plainto_tsquery(?) query\n" +
+                "WHERE article_vector @@ query\n" +
+                "ORDER BY ts_rank(article_vector, query) DESC\n" +
+                "LIMIT 50";
+
+        if (query != null) {
+            try (Connection cxn = pool.getConnection();
+                 PreparedStatement ps = cxn.prepareStatement(searchQuery)) {
+                ps.setString(1, query);
+                List<Map<String,Object>> results = new ArrayList<>();
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Map<String,Object> r = new HashMap<>();
+                        r.put("id", rs.getLong("article_id"));
+                        r.put("title", rs.getString("title"));
+                        results.add(r);
+                    }
+                }
+                fields.put("results", results);
+            }
+        }
+
+        return new ModelAndView(fields, "search.html.twig");
     }
 }
