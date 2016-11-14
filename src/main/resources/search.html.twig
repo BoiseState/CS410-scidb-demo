@@ -7,6 +7,7 @@
 <body>
 <h1>Search Results</h1>
 <form action="/search" method="GET">
+    {% if pubId != null %}<input type="hidden" name="pub" value="{{ pubId }}">{% endif %}
     <label>Keywords: <input type="search" name="q" value="{{ query }}"></label>
     <button type="submit">Search</button>
 </form>

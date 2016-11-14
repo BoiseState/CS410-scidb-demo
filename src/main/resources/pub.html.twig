@@ -6,7 +6,12 @@
 </head>
 <body>
 <h1>{{ title }}</h1>
-
+<h2>Search Issues</h2>
+<form action="/search" method="GET">
+    <input type="hidden" name="pub" value="{{ pubId }}">
+    <label>Search Keywords: <input type="search" name="q"></label>
+    <button type="submit">Search</button>
+</form>
 <h2>Issues</h2>
 <ul>
     {% for issue in issues %}

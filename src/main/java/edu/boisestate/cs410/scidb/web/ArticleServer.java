@@ -207,18 +207,36 @@ public class ArticleServer {
 
         String query = req.queryParams("q");
         fields.put("query", query);
+        String pubStr = req.queryParams("pub");
 
-        String searchQuery = "SELECT article_id, title\n" +
-                "FROM article JOIN article_search USING (article_id),\n" +
-                "  plainto_tsquery(?) query\n" +
-                "WHERE article_vector @@ query\n" +
-                "ORDER BY ts_rank(article_vector, query) DESC\n" +
-                "LIMIT 50";
+        String searchQuery;
+        long pubId = 0;
+        if (pubStr == null) {
+            searchQuery = "SELECT article_id, title\n" +
+                    "FROM article JOIN article_search USING (article_id),\n" +
+                    "  plainto_tsquery(?) query\n" +
+                    "WHERE article_vector @@ query\n" +
+                    "ORDER BY ts_rank(article_vector, query) DESC\n" +
+                    "LIMIT 50";
+        } else {
+            searchQuery = "SELECT article_id, title\n" +
+                    "FROM article JOIN article_search USING (article_id)\n" +
+                    "  JOIN issue USING (issue_id),\n" +
+                    "  plainto_tsquery(?) query\n" +
+                    "WHERE article_vector @@ query AND pub_id = ?\n" +
+                    "ORDER BY ts_rank(article_vector, query) DESC\n" +
+                    "LIMIT 50";
+            pubId = Long.parseLong(pubStr);
+            fields.put("pubId", pubId);
+        }
 
         if (query != null) {
             try (Connection cxn = pool.getConnection();
                  PreparedStatement ps = cxn.prepareStatement(searchQuery)) {
                 ps.setString(1, query);
+                if (pubStr != null) {
+                    ps.setLong(2, pubId);
+                }
                 List<Map<String,Object>> results = new ArrayList<>();
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
